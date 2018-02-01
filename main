@@ -1,0 +1,80 @@
+from flask import Flask, jsonify
+from interface import Interface
+import _thread
+
+# add requests
+
+interface = Interface()
+# Instantiate our Node
+# main program runs here
+
+print('Client Started')
+
+interface.update_nodes()
+interface.consensus()
+
+interface.mine()
+
+
+def cli():
+    while True:
+        userinput = input('>> ')
+        splitinput = userinput.split()
+
+        if splitinput:
+
+            if splitinput[0] == 'balance':
+                balance = interface.blockchain.my_balance()
+                print(f'your balance is: {balance} coins.')
+
+            elif splitinput[0] == 'send':
+                receiver = splitinput[1][6:]
+                print(f'the receiver is: {receiver}\n')
+                amount = float(splitinput[2][6:])
+                print(f'the amount is: {amount}\n')
+                response = input('Y/N?')
+                if response == 'Y':
+                    interface.send(receiver, amount)
+                elif response == 'N':
+                    print('Transaction Discarded!')
+
+            elif splitinput[0] == 'help':
+                print('This program has the following functions:\n')
+                print('1) balance (Check your ether balance)\n')
+                print('2) send (send money to someone) EX: send addr--0x123456789 amnt--25 \n')
+                print('The Programs automatically mines periodically to maintain the blockchain \n')
+
+
+app = Flask(__name__)
+
+
+@app.route('/address', methods=['GET'])
+def show_address():
+    response = {
+        'address': interface.blockchain.address,
+    }
+    return jsonify(response), 200
+
+
+@app.route('/chain', methods=['GET'])
+def full_chain():
+    response = {
+        'chain': interface.blockchain.chain,
+        'length': len(interface.blockchain.chain),
+    }
+    return jsonify(response), 200
+
+
+@app.route('/transactions', methods=['GET'])
+def current_transactions():
+    response = {
+        'transactions': interface.blockchain.current_transactions,
+    }
+    return jsonify(response), 200
+
+
+if __name__ == '__main__':
+    _thread.start_new_thread(cli, ())
+    print('Command Line Interface:\n')
+    app.run(host='0.0.0.0', port=5000)
+
