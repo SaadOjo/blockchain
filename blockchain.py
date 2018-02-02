@@ -8,7 +8,7 @@ import json
 
 class Blockchain(object):
     def __init__(self):
-        self.current_transactions = set()
+        self.current_transactions = []
         self.chain = []
         self.new_block(previous_hash=1, proof=100)
         self.nodes = set()
@@ -100,14 +100,20 @@ class Blockchain(object):
             'previous_hash': previous_hash or self.hash(self.chain[-1]),
         }
 
-        self.current_transactions = set()
+        self.current_transactions = []
         self.chain.append(block)
         return block
 
     def new_transaction(self, sender, recipient, amount):
         # Adds a new transaction to the list of transactions
-        transaction = (sender, recipient, amount, time())
-        self.current_transactions.add(transaction)
+        transaction = {
+            'sender':sender,
+            'recipient': recipient,
+            'amount': amount,
+            'time': time(),
+            }
+
+        self.current_transactions.append(transaction)
         return self.last_block['index'] + 1
 
     def my_balance(self):
@@ -116,12 +122,12 @@ class Blockchain(object):
         for block in self.chain:
             transactions = block['transactions']
             for transaction in transactions:
-                recipient = transaction[1]  # test
-                sender = transaction[0]
+                recipient = transaction['recipient']  # test
+                sender = transaction['sender']
                 if recipient == self.address:
-                    my_balance += transaction[2]
+                    my_balance += transaction['amount']
                 if sender == self.address:
-                    my_balance -= transaction[2]
+                    my_balance -= transaction['amount']
 
         return my_balance
 
@@ -141,7 +147,7 @@ class Blockchain(object):
     @staticmethod
     def hash(block):
         # Hashes a Block
-        block_string = str(block).encode()
+        block_string = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
 
     @property

@@ -21,6 +21,7 @@ class Interface(object):
         finally:
             s.close()
         return IP
+
     def mine(self):  # add min transactions requirement (added in main program)
         # We run the proof of work algorithm to get the next proof...
         self.update_current_transactions()  # make sure to collect transactions from other nodes
@@ -92,7 +93,7 @@ class Interface(object):
     def send(self, address, amount):
 
         # Create a new Transaction
-        if self.blockchain.my_balance() >= amount:
+        if self.blockchain.my_balance() >= amount:  # also check current transactions
             index = self.blockchain.new_transaction(self.blockchain.address, address, amount)
             response = {'message': f'Transaction will be added to Block {index}'}
             print(response)
@@ -108,4 +109,10 @@ class Interface(object):
             if response.status_code == 200:
                 current_transactions = response.json()['transactions']
                 for transaction in current_transactions:
-                        self.blockchain.current_transactions.add(transaction)
+                    unique_transaction = True
+                    for my_transactions in self.blockchain.current_transactions:
+                        if transaction['time'] == my_transactions['time']:
+                            unique_transaction = False
+
+                    if unique_transaction == True:
+                        self.blockchain.current_transactions.append(transaction)
