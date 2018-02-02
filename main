@@ -47,6 +47,9 @@ def cli():
                 interface.mine()
                 print('you are now rich. Check your balance to confirm.')
 
+            elif splitinput[0] == 'update_nodes':
+                interface.update_nodes()
+
             elif splitinput[0] == 'exit':
                 print('Terminating Program')
                 sys.exit()
@@ -113,6 +116,9 @@ def current_transactions():
 
 if __name__ == '__main__':
     _thread.start_new_thread(cli, ())
+    print('****SAAD COIN****\n')
+    print('Create by Syed Saad Saif\n')
+    print('************************\n')
     print('Command Line Interface:\n')
     app.run(host='0.0.0.0', port=5000)
 
