@@ -34,8 +34,13 @@ def cli():
         if splitinput:
 
             if splitinput[0] == 'balance':
+                interface.consensus()
                 balance = interface.blockchain.my_balance()
                 print(f'your balance is: {balance} coins.')
+
+            if splitinput[0] == 'update_blockchain':
+                interface.consensus()
+                print(f'blockchain updated.')
 
             elif splitinput[0] == 'mine':
                 mine()

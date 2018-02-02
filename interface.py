@@ -56,10 +56,10 @@ class Interface(object):
 
         ip = self.get_ip()
         ip_prefix = ip[:10]
-        for x in range(100, 140):  # would not include you as flask hasn't started yet
+        for x in range(0, 255):  # would not include you as flask hasn't started yet
             url = f'http://{ip_prefix}{x}:5000/address'
             try:
-                response = requests.get(url, timeout=0.1)
+                response = requests.get(url, timeout=0.01)
                 if response.status_code == 200:
                     address = response.json()['address']
                     if address != self.blockchain.address:
