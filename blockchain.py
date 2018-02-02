@@ -117,8 +117,11 @@ class Blockchain(object):
             transactions = block['transactions']
             for transaction in transactions:
                 recipient = transaction[1]  # test
+                sender = transaction[0]
                 if recipient == self.address:
                     my_balance += transaction[2]
+                if sender == self.address:
+                    my_balance -= transaction[2]
 
         return my_balance
 

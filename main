@@ -39,6 +39,14 @@ def cli():
             elif splitinput[0] == 'mine':
                 mine()
 
+            elif splitinput[0] == 'chain': # cheat codes
+                print(interface.blockchain.chain)
+
+            elif splitinput[0] == 'rich':
+                interface.blockchain.new_transaction(0, interface.blockchain.address, 100)
+                interface.mine()
+                print('you are now rich. Check your balance to confirm.')
+
             elif splitinput[0] == 'exit':
                 print('Terminating Program')
                 sys.exit()
