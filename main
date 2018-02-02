@@ -1,6 +1,8 @@
 from flask import Flask, jsonify
 from interface import Interface
 import _thread
+import sys
+
 
 # add requests
 
@@ -8,12 +10,19 @@ interface = Interface()
 # Instantiate our Node
 # main program runs here
 
-print('Client Started')
 
+def mine():
+    if len(interface.blockchain.current_transactions) >= 2:
+        interface.mine()
+    else:
+        print('not enough transactions in the AIR to mine')
+
+
+print('Client Started')
 interface.update_nodes()
 interface.consensus()
+mine()
 
-interface.mine()
 
 
 def cli():
@@ -26,6 +35,24 @@ def cli():
             if splitinput[0] == 'balance':
                 balance = interface.blockchain.my_balance()
                 print(f'your balance is: {balance} coins.')
+
+            elif splitinput[0] == 'mine':
+                mine()
+
+            elif splitinput[0] == 'exit':
+                print('Terminating Program')
+                sys.exit()
+
+            elif splitinput[0] == 'nodes':
+
+                if len(interface.blockchain.nodes) == 0:
+                    print('there are no other nodes in the network')
+
+                else:
+                    i = 1
+                    for nodes in interface.blockchain.nodes:
+                        node_address = nodes[1]
+                        print(f'{i}) {node_address}')
 
             elif splitinput[0] == 'send':
                 receiver = splitinput[1][6:]
@@ -41,8 +68,11 @@ def cli():
             elif splitinput[0] == 'help':
                 print('This program has the following functions:\n')
                 print('1) balance (Check your ether balance)\n')
-                print('2) send (send money to someone) EX: send addr--0x123456789 amnt--25 \n')
-                print('The Programs automatically mines periodically to maintain the blockchain \n')
+                print('2) send    (send money to someone) EX: send addr--0x123456789 amnt--25 \n')
+                print('3) nodes   (Show the address of nodes in the network)\n')
+                print('4) mine    (update the blockchain)\n')
+                print('5) exit    (exit the program)\n')
+                print('The Programs automatically mines periodically to maintain the blockchain (not currently)\n')
 
 
 app = Flask(__name__)
