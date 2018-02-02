@@ -59,18 +59,14 @@ class Interface(object):
         for x in range(0, 255):  # would not include you as flask hasn't started yet
             url = f'http://{ip_prefix}{x}:5000/address'
             try:
-                response = requests.get(url, timeout=0.01)
+                response = requests.get(url, timeout=0.05)
                 if response.status_code == 200:
                     address = response.json()['address']
                     if address != self.blockchain.address:
                         self.blockchain.register_node(url, address)
                         # tell other nodes about you
-                        node_data = {
-                            'url': f'http://{interface.get_ip()}:5000',
-                            'address': self.blockchain.address,
-                        }
                         try:
-                            requests.post(f'http://{ip_prefix}{x}:5000/register_node', data=json.dumps(node_data))
+                            requests.post(f'http://{ip_prefix}{x}:5000/register_node', json={'url': f'http://{self.get_ip()}:5000', 'address': self.blockchain.address})
                         except requests.exceptions.ConnectionError:
                             print(f'failed to register this node at {ip_prefix}{x} ')
 
