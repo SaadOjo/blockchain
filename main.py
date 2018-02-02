@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+import json
 from interface import Interface
 import _thread
 import sys
@@ -124,14 +125,17 @@ def current_transactions():
 @app.route('/register_node', methods=['POST'])
 def register_node():
     values = request.get_json()
-    address = values.get('address')
-    url = values.get('url')
-    interface.blockchain.register_node(url, address)
 
-    response = {
-        'message': 'node has been added to database',
-    }
-    return jsonify(response), 200
+    # Check that the required fields are in the POST'ed data
+    required = ['url', 'address']
+    if not all(k in values for k in required):
+        return 'Missing values', 400
+
+    # Create a new Transaction
+    interface.blockchain.register_node(values['url'], values['address'])
+
+    response = {'message': f'node registered'}
+    return jsonify(response), 201
 
 
 if __name__ == '__main__':
