@@ -66,7 +66,7 @@ class Interface(object):
                         self.blockchain.register_node(url, address)
                         # tell other nodes about you
                         node_data = {
-                            'url': f'http://{ip_prefix}{x}:5000',
+                            'url': f'http://{interface.get_ip()}:5000',
                             'address': self.blockchain.address,
                         }
                         try:
