@@ -64,6 +64,16 @@ class Interface(object):
                     address = response.json()['address']
                     if address != self.blockchain.address:
                         self.blockchain.register_node(url, address)
+                        # tell other nodes about you
+                        node_data = {
+                            'url': f'{ip_prefix}{x}:5000',
+                            'address': self.blockchain.address,
+                        }
+                        try:
+                            requests.post(f'http://{ip_prefix}{x}:5000/register_node', json.dumps(node_data))
+                        except requests.exceptions.ConnectionError:
+                            print(f'failed to register this node at {ip_prefix}{x} ')
+
             except requests.exceptions.ConnectionError:
                 print(f'no node {url}')
 

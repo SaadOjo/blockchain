@@ -43,6 +43,7 @@ def cli():
                 print(f'blockchain updated.')
 
             elif splitinput[0] == 'mine':
+                interface.update_current_transactions()
                 mine()
 
             elif splitinput[0] == 'chain': # cheat codes
