@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from interface import Interface
 import _thread
 import sys
@@ -110,6 +110,19 @@ def full_chain():
 def current_transactions():
     response = {
         'transactions': interface.blockchain.current_transactions,
+    }
+    return jsonify(response), 200
+
+
+@app.route('/register_node', methods=['POST'])
+def register_node():
+    values = request.get_json()
+    address = values.get('address')
+    url = values.get('url')
+    interface.blockchain.register_node(url, address)
+
+    response = {
+        'message': 'node has been added to database',
     }
     return jsonify(response), 200
 

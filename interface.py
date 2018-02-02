@@ -1,4 +1,5 @@
 import requests
+import json
 import socket
 from blockchain import Blockchain
 
@@ -20,7 +21,6 @@ class Interface(object):
         finally:
             s.close()
         return IP
-
     def mine(self):  # add min transactions requirement (added in main program)
         # We run the proof of work algorithm to get the next proof...
         self.update_current_transactions()  # make sure to collect transactions from other nodes
@@ -57,14 +57,19 @@ class Interface(object):
         ip_prefix = ip[:10]
         for x in range(100, 140):  # would not include you as flask hasn't started yet
             url = f'http://{ip_prefix}{x}:5000/address'
-
+            node_url = f'{ip_prefix}{x}:5000'
             try:
                 response = requests.get(url, timeout=0.1)
                 if response.status_code == 200:
                     address = response.json()['address']
                     if address != self.blockchain.address:
-                        self.blockchain.register_node(url, address)
+                        self.blockchain.register_node(node_url, address)
                         print(f'node found at {url}')
+                        node_data = {
+                            'url': f'{self.get_ip()}:5000',
+                            'address': self.blockchain.address,
+                        }
+                        requests.post(f'{ip_prefix}{x}:5000/register_node', data=json.dumps(node_data))
 
             except requests.exceptions.ConnectionError:
                 print(f'no node {url}')
