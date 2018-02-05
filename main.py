@@ -6,6 +6,8 @@ import sys
 
 #dummy comment
 
+# tell other nodes on making a transaction
+
 # add requests
 
 interface = Interface()
